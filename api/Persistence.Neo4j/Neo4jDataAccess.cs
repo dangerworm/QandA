@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using Neo4j.Driver;
-using Microsoft.Extensions.Logging;
 
 namespace Persistence.Neo4j
 {
@@ -28,9 +23,9 @@ namespace Persistence.Neo4j
             return await ExecuteReadListAsync<string>(query, returnObjectKey, parameters);
         }
 
-        public async Task<IList<Dictionary<string, object>>> ExecuteReadDictionaryAsync(string query, string returnObjectKey, IDictionary<string, object>? parameters = null)
+        public async Task<IList<IDictionary<string, object>>> ExecuteReadDictionaryAsync(string query, string returnObjectKey, IDictionary<string, object>? parameters = null)
         {
-            return await ExecuteReadListAsync<Dictionary<string, object>>(query, returnObjectKey, parameters);
+            return await ExecuteReadListAsync<IDictionary<string, object>>(query, returnObjectKey, parameters);
         }
      
         public async Task<T> ExecuteReadScalarAsync<T>(string query, IDictionary<string, object>? parameters = null)
