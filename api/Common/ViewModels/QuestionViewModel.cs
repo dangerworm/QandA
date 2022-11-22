@@ -1,8 +1,8 @@
-﻿namespace Persistence.Neo4j.Entities
+﻿namespace Common.ViewModels
 {
-    public record Question
+    public class QuestionViewModel : IEntity
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime Created { get; set; }
         public bool IsDeleted { get; set; }
         public string QuestionText { get; set; }

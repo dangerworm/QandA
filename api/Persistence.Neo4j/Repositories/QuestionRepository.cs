@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using Persistence.Neo4j.Entities;
-using static Persistence.Neo4j.Constants;
+﻿using Common.Nodes;
+using Microsoft.Extensions.Logging;
+using static Persistence.Neo4j.NodeTypes;
+using static Persistence.Neo4j.Relationships;
 
-namespace Persistence.Neo4j
+namespace Persistence.Neo4j.Repositories
 {
     public class QuestionRepository : IQuestionRepository
     {
-        INeo4jDataAccess _neo4jDataAccess;
+        private INeo4jDataAccess _neo4jDataAccess;
         private ILogger<QuestionRepository> _logger;
 
         public QuestionRepository(INeo4jDataAccess neo4jDataAccess, ILogger<QuestionRepository> logger)
@@ -15,27 +16,31 @@ namespace Persistence.Neo4j
             _logger = logger;
         }
 
-        public async Task<bool> Create(Question question)
+        public async Task<object> Create(UserNode user, QuestionNode question)
         {
+            // TODO: Move this to a validator
             if (string.IsNullOrWhiteSpace(question?.QuestionText))
             {
                 throw new ArgumentNullException(nameof(question), "Question has no text");
             }
 
             var query =
-                $"MERGE (q: {QUESTION} {{ questionText: ${nameof(question.QuestionText)} }}" +
+                $"MATCH (user:{USER} {{ Id: '{user.Id}' }}) " +
+                $"MATCH (question: {QUESTION} {{ QuestionText: ${nameof(question.QuestionText)} }}) " +
+                $"MERGE (user)-[asked:{ASKED}]->(question) " +
                 $"ON CREATE SET " +
-                $"  q.created = '{DateTime.UtcNow:u}'," +
-                $"  q.isDeleted = ${question.IsDeleted} " +
-                $"RETURN true";
+                $"  asked.Created = '{DateTime.UtcNow:u}', " +
+                $"  asked.IsDeleted = false, " +
+                $"  question.Created = '{DateTime.UtcNow:u}', " +
+                $"  question.IsDeleted = false " +
+                $"RETURN user, asked, question";
 
             IDictionary<string, object> parameters = new Dictionary<string, object>
             {
-                { nameof(question.QuestionText), question.QuestionText },
-                { nameof(question.IsDeleted), question.IsDeleted }
+                { nameof(question.QuestionText), question.QuestionText }
             };
 
-            return await _neo4jDataAccess.ExecuteWriteTransactionAsync<bool>(query, parameters);
+            return await _neo4jDataAccess.ExecuteWriteTransactionAsync<object>(query, parameters);
         }
 
         public async Task<IList<IDictionary<string, object>>> SearchByText(string searchString)

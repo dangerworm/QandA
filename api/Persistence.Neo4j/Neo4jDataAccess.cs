@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Common;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Neo4j.Driver;
 
 namespace Persistence.Neo4j
@@ -10,11 +12,14 @@ namespace Persistence.Neo4j
 
         private string _database;
 
-        public Neo4jDataAccess(ILogger<Neo4jDataAccess> logger, IDriver driver, string database)
+        public Neo4jDataAccess(ILogger<Neo4jDataAccess> logger, IDriver driver, IConfiguration configuration)
         {
             _logger = logger;
-            
-            _database = database;
+
+            var applicationSettings = new ApplicationSettings();
+            configuration.Bind(ApplicationSettings.SectionKey, applicationSettings);
+
+            _database = applicationSettings.Neo4jDatabase;
             _session = driver.AsyncSession(configBuilder => configBuilder.WithDatabase(_database));
         }
 
@@ -50,12 +55,12 @@ namespace Persistence.Neo4j
             {
                 parameters ??= new Dictionary<string, object>();
 
-                return await _session.ExecuteWriteAsync(async queryRunner =>
-                    await RunAndReturnSingle<T>(queryRunner, query, parameters));
+                return await _session.ExecuteWriteAsync(queryRunner =>
+                    RunAndReturnSingle<T>(queryRunner, query, parameters));
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "There was a problem while executing a read query on the Neo4j database");
+                _logger.LogError(exception, "There was a problem while executing a write to the Neo4j database");
                 throw;
             }
         }
@@ -68,9 +73,10 @@ namespace Persistence.Neo4j
         private static async Task<T> RunAndReturnSingle<T>(IAsyncQueryRunner queryRunner, string query, IDictionary<string, object>? parameters = null)
         {
             var result = await queryRunner.RunAsync(query, parameters);
-            var record = await result.SingleAsync();
+            var keys = await result.KeysAsync();
+            var records = await result.ToListAsync();
 
-            return record[0].As<T>();
+            return records.FirstOrDefault().As<T>();
         }
 
         private async Task<IList<T>> ExecuteReadListAsync<T>(string query, string returnObjectKey, IDictionary<string, object>? parameters)

@@ -5,7 +5,9 @@ VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{E8ED64A8-9A44-45FC-83E8-D7A1650F96B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence.Neo4j", "Persistence.Neo4j\Persistence.Neo4j.csproj", "{7FF8323F-1D73-4E3A-8DBF-9D662703048C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence.Neo4j", "Persistence.Neo4j\Persistence.Neo4j.csproj", "{7FF8323F-1D73-4E3A-8DBF-9D662703048C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{8A539449-05EB-4B10-9E5B-1C83A1D93EA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7FF8323F-1D73-4E3A-8DBF-9D662703048C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FF8323F-1D73-4E3A-8DBF-9D662703048C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FF8323F-1D73-4E3A-8DBF-9D662703048C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A539449-05EB-4B10-9E5B-1C83A1D93EA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A539449-05EB-4B10-9E5B-1C83A1D93EA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A539449-05EB-4B10-9E5B-1C83A1D93EA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A539449-05EB-4B10-9E5B-1C83A1D93EA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
